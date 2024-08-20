@@ -105,11 +105,15 @@ function love.keypressed(key)
 end
 
 function love.draw()
+    -- background = white
     love.graphics.clear(1, 1, 1, 1)
+    -- lines and cells = black
+    love.graphics.setColor(0, 0, 0, 1)
+
     local wwidth, wheight = love.graphics.getDimensions()
+
     for y, row in pairs(universe) do
-        for x, _ in pairs(row) do
-            love.graphics.setColor(0, 0, 0, 1)
+        for x, alive in pairs(row) do
             love.graphics.rectangle(
                 'line',
                 (x - 1) * wwidth / #universe[y],
@@ -117,13 +121,8 @@ function love.draw()
                 wwidth / #universe[y],
                 wheight / #universe
             )
-        end
-    end
-    for y, row in pairs(universe) do
-        for x, alive in pairs(row) do
             if alive then
                 local padding = 10
-                love.graphics.setColor(0, 0, 0, 1)
                 love.graphics.rectangle(
                     'fill',
                     (x - 1) * wwidth / #universe[y] + padding / 2,
