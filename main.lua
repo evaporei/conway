@@ -47,8 +47,8 @@ local function neighbors(y, x)
     }
 end
 
-local function underpopulation(y, x)
-    local aliveNeighbors = 0
+local function aliveNeighbors(y, x)
+    local count = 0
 
     for _, pos in pairs(neighbors(y, x)) do
         if pos.y < 1 or pos.y > #universe or
@@ -57,62 +57,36 @@ local function underpopulation(y, x)
         end
 
         if universe[pos.y][pos.x] then
-            aliveNeighbors = aliveNeighbors + 1
+            count = count + 1
         end
 
         ::continue::
     end
 
-    return aliveNeighbors < 2
+    return count
+end
+
+local function underpopulation(y, x)
+    return aliveNeighbors(y, x) < 2
 end
 
 local function overpopulation(y, x)
-    local aliveNeighbors = 0
-
-    for _, pos in pairs(neighbors(y, x)) do
-        if pos.y < 1 or pos.y > #universe or
-            pos.x < 1 or pos.x > #universe[1] then
-            goto continue
-        end
-
-        if universe[pos.y][pos.x] then
-            aliveNeighbors = aliveNeighbors + 1
-        end
-
-        ::continue::
-    end
-
-    return aliveNeighbors > 3
+    return aliveNeighbors(y, x) > 3
 end
 
 local function reproduction(y, x)
-    local aliveNeighbors = 0
-
-    for _, pos in pairs(neighbors(y, x)) do
-        if pos.y < 1 or pos.y > #universe or
-            pos.x < 1 or pos.x > #universe[1] then
-            goto continue
-        end
-
-        if universe[pos.y][pos.x] then
-            aliveNeighbors = aliveNeighbors + 1
-        end
-
-        ::continue::
-    end
-
-    return aliveNeighbors == 3
+    return aliveNeighbors(y, x) == 3
 end
 
 local function nextGeneration()
     local newUniverse = copyUniverse()
 
     for y, row in pairs(universe) do
-        for x, cell in pairs(row) do
-            if cell and (underpopulation(y, x) or overpopulation(y, x)) then
+        for x, alive in pairs(row) do
+            if alive and (underpopulation(y, x) or overpopulation(y, x)) then
                 newUniverse[y][x] = false
             end
-            if not cell and reproduction(y, x) then
+            if not alive and reproduction(y, x) then
                 newUniverse[y][x] = true
             end
         end
